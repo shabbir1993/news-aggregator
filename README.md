@@ -34,6 +34,7 @@ REACT_APP_NY_TIMES_API_KEY=your_ny_times_api_key
 Replace your_guardian_api_key and your_ny_times_api_key with your actual API keys.
 
 ## Install dependencies
+Fromt the root of the project run following : 
 
 ```bash
 npm install
@@ -49,6 +50,7 @@ The application will be available at `http://localhost:3000`.
 ## Running via Docker
 
 ## Build Docker Image
+From the root of the project folder run following : 
 
 ```bash
 docker build -t news-aggregator .
