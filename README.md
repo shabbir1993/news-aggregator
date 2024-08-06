@@ -26,8 +26,6 @@ cd news-aggregator
 ## Environment Variables
 Create a .env file in the root of the project with the following content:
 
-makefile
-Copy code
 REACT_APP_GUARDIAN_API_KEY=your_guardian_api_key
 REACT_APP_NY_TIMES_API_KEY=your_ny_times_api_key
 
