@@ -1,4 +1,5 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import {
   Container,
   TextField,
@@ -9,14 +10,21 @@ import {
   Typography,
   CardActions,
   Button,
+  Box,
+  CircularProgress,
 } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { styled } from "@mui/material/styles";
+
+const FullWidthDatePicker = styled(DatePicker)(({ theme }) => ({
+  width: "100%",
+  [theme.breakpoints.down("sm")]: {
+    width: "100%",
+  },
+}));
 
 function App() {
-  const guardianApiKey = process.env.REACT_APP_GUARDIAN_API_KEY;
-  const nyTimesApiKey = process.env.REACT_APP_NY_TIMES_API_KEY;
-
   const [articles, setArticles] = useState([]);
   const [query, setQuery] = useState("");
   const [filters, setFilters] = useState({
@@ -24,6 +32,107 @@ function App() {
     category: "all",
     source: "all",
   });
+
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchArticles = async () => {
+      setLoading(true);
+      let combinedArticles = [];
+      if (
+        !filters.source ||
+        filters.source === "all" ||
+        filters.source === "guardian"
+      ) {
+        const guardianArticles = await fetchGuardianArticles();
+        combinedArticles = combinedArticles.concat(guardianArticles);
+      }
+      if (
+        !filters.source ||
+        filters.source === "all" ||
+        filters.source === "new-york-times"
+      ) {
+        const nyTimesArticles = await fetchNYTimesArticles();
+        combinedArticles = combinedArticles.concat(nyTimesArticles);
+      }
+      setArticles(combinedArticles);
+      setLoading(false);
+    };
+
+    fetchArticles();
+  }, [query, filters]);
+
+  const fetchGuardianArticles = async () => {
+    const guardianApiKey = process.env.REACT_APP_GUARDIAN_API_KEY;
+
+    try {
+      const params = {
+        "api-key": `${guardianApiKey}`,
+      };
+
+      if (query) params.q = query;
+      if (filters.date)
+        params["from-date"] = filters.date.toISOString().split("T")[0];
+      if (filters.category && filters.category !== "all")
+        params.section = filters.category;
+
+      const response = await axios.get(
+        "https://content.guardianapis.com/search",
+        { params }
+      );
+
+      return response.data.response.results.map((article) => ({
+        title: article.webTitle,
+        description: article.fields?.trailText,
+        url: article.webUrl,
+      }));
+    } catch (error) {
+      console.error("Error fetching Guardian articles:", error.message);
+      if (error.response) {
+        console.error("Status code:", error.response.status);
+        console.error("Response data:", error.response.data);
+      }
+      return [];
+    }
+  };
+
+  const fetchNYTimesArticles = async () => {
+
+    const nyTimesApiKey = process.env.REACT_APP_NY_TIMES_API_KEY;
+
+    try {
+      const params = {
+        "api-key": `${nyTimesApiKey}`,
+      };
+
+      if (query) params.q = query;
+      if (filters.date)
+        params.begin_date = filters.date
+          .toISOString()
+          .split("T")[0]
+          .replace(/-/g, "");
+      if (filters.category && filters.category !== "all")
+        params.fq = `section_name:("${filters.category}")`;
+
+      const response = await axios.get(
+        "https://api.nytimes.com/svc/search/v2/articlesearch.json",
+        { params }
+      );
+
+      return response.data.response.docs.map((article) => ({
+        title: article.headline.main,
+        description: article.snippet,
+        url: article.web_url,
+      }));
+    } catch (error) {
+      console.error("Error fetching NYTimes articles:", error.message);
+      if (error.response) {
+        console.error("Status code:", error.response.status);
+        console.error("Response data:", error.response.data);
+      }
+      return [];
+    }
+  };
 
   const handleSearch = (e) => {
     setQuery(e.target.value);
@@ -51,7 +160,7 @@ function App() {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <DatePicker
+            <FullWidthDatePicker
               label="Select Date"
               value={filters.date}
               onChange={handleDateChange}
@@ -72,7 +181,6 @@ function App() {
               <MenuItem value="business">Business</MenuItem>
               <MenuItem value="technology">Technology</MenuItem>
               <MenuItem value="sports">Sports</MenuItem>
-              {/* Populate category options */}
             </TextField>
           </Grid>
           <Grid item xs={12} sm={4}>
@@ -87,36 +195,41 @@ function App() {
               <MenuItem value="all">All</MenuItem>
               <MenuItem value="guardian">Guardian</MenuItem>
               <MenuItem value="new-york-times">New York Times</MenuItem>
-              {/* Populate source options */}
             </TextField>
           </Grid>
         </Grid>
-        <Grid container spacing={2}>
-          {articles.map((article, index) => (
-            <Grid item xs={12} sm={6} md={4} key={index}>
-              <Card>
-                <CardContent>
-                  <Typography variant="h5" component="div">
-                    {article.title}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {article.description}
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <Button
-                    size="small"
-                    href={article.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Read more
-                  </Button>
-                </CardActions>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
+        {loading ? (
+          <Box display="flex" justifyContent="center" alignItems="center" height="50vh">
+            <CircularProgress />
+          </Box>
+        ) : (
+          <Grid container spacing={2}>
+            {articles.map((article, index) => (
+              <Grid item xs={12} sm={6} md={4} key={index}>
+                <Card>
+                  <CardContent>
+                    <Typography variant="h5" component="div">
+                      {article.title}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {article.description}
+                    </Typography>
+                  </CardContent>
+                  <CardActions>
+                    <Button
+                      size="small"
+                      href={article.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Read more
+                    </Button>
+                  </CardActions>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        )}
       </Container>
     </LocalizationProvider>
   );
