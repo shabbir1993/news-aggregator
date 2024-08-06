@@ -39,14 +39,14 @@ Replace your_guardian_api_key and your_ny_times_api_key with your actual API key
 npm install
 ```
 
-# Running the App
+## Running the App
 ```bash
 npm start
 ```
 
 The application will be available at `http://localhost:3000`.
 
-# Running via Docker
+## Running via Docker
 
 ## Build Docker Image
 
@@ -69,11 +69,11 @@ Replace <IMAGE_ID> with the actual ID of your Docker image.
 
 The application will be available at http://localhost:3000.
 
-# Project Structure
+## Project Structure
  - src/: Contains all the source code
  - components/: Reusable React components
  - hooks/: Custom React hooks
  - constants/: Constants used throughout the application
 
- 
+
 
