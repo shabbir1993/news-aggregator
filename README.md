@@ -1,70 +1,79 @@
-# Getting Started with Create React App
+# News Aggregator
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A React-based news aggregator application that fetches articles from The Guardian and New York Times APIs.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- Search for articles
+- Filter by date, category, and source
+- Responsive design with full-width date picker on mobile devices
+- Loading spinner while fetching data
 
-### `npm start`
+## Prerequisites
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- Node.js (v16 or higher)
+- Docker
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Getting Started
 
-### `npm test`
+### Clone the repository
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```bash
+git clone https://github.com/yourusername/news-aggregator.git
+cd news-aggregator
+```
 
-### `npm run build`
+## Environment Variables
+Create a .env file in the root of the project with the following content:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+makefile
+Copy code
+REACT_APP_GUARDIAN_API_KEY=your_guardian_api_key
+REACT_APP_NY_TIMES_API_KEY=your_ny_times_api_key
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Replace your_guardian_api_key and your_ny_times_api_key with your actual API keys.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Install dependencies
 
-### `npm run eject`
+```bash
+npm install
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+# Running the App
+```bash
+npm start
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+The application will be available at `http://localhost:3000`.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+# Running via Docker
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## Build Docker Image
 
-## Learn More
+```bash
+docker build -t news-aggregator .
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## List Docker Images
+```bash
+docker images
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Run the Docker Container
 
-### Code Splitting
+Copy the IMAGE ID from the previous step and run the following command:
+```bash
+docker run -p 3000:3000 <IMAGE_ID>
+```
+Replace <IMAGE_ID> with the actual ID of your Docker image.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+The application will be available at http://localhost:3000.
 
-### Analyzing the Bundle Size
+# Project Structure
+ - src/: Contains all the source code
+ - components/: Reusable React components
+ - hooks/: Custom React hooks
+ - constants/: Constants used throughout the application
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+ 
 
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
